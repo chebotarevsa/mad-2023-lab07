@@ -22,14 +22,15 @@ class SeeCardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSeeCardBinding.inflate(layoutInflater, container, false)
+        viewModel.initDatabase(CardDatabase.getInstance(requireContext()))
         viewModel.setCardOfFragment(cardId)
-
         with(binding) {
             viewModel.card.observe(viewLifecycleOwner) {
                 cardQuestion.text = getString(R.string.question_field, it.question)
                 cardExample.text = getString(R.string.example_field, it.example)
                 cardAnswer.text = getString(R.string.answer_field, it.answer)
                 cardTranslation.text = getString(R.string.translationField, it.translation)
+                idNum.text = it.id.toString()
                 if (it.image != null) {
                     cardImage.setImageBitmap(it.image)
                 } else {

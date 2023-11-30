@@ -1,9 +1,13 @@
 package com.example.lab7
 
 import android.graphics.Bitmap
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity
 data class Card(
-    val id: Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int?,
     val question: String,
     val example: String,
     val answer: String,

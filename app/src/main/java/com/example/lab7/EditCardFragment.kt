@@ -25,8 +25,8 @@ class EditCardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEditCardBinding.inflate(layoutInflater, container, false)
-
         with(viewModel) {
+            initDatabase(CardDatabase.getInstance(requireContext()))
             setCardOfFragment(cardId)
             with(binding) {
                 card.observe(viewLifecycleOwner) {

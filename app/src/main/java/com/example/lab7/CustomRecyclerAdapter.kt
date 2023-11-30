@@ -1,5 +1,6 @@
 package com.example.lab7
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,12 @@ class CustomRecyclerAdapter(
         val deleteImage: ImageView = itemView.findViewById(R.id.deleter)
     }
 
+    var cards: List<Card> = emptyList()
+        @SuppressLint("NotifyDataSetChanged") set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardHolder {
         val itemView =
             LayoutInflater
@@ -29,6 +36,7 @@ class CustomRecyclerAdapter(
 
     override fun onBindViewHolder(holder: CardHolder, position: Int) {
         val card = cards[position]
+        holder.itemView.tag = card.id
         if (card.image != null) {
             holder.thumbnailImage.setImageBitmap(card.image)
         } else {
@@ -37,21 +45,11 @@ class CustomRecyclerAdapter(
         holder.largeTextView.text = card.answer
         holder.smallTextView.text = card.translation
         holder.itemView.setOnClickListener {
-            action.onItemClick(card.id)
+            action.onItemClick(card.id!!)
         }
         holder.deleteImage.setOnClickListener {
-            action.onDeleteCard(card.id)
+            action.onDeleteCard(card.id!!)
         }
     }
-
-    var cards: List<Card> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 }
 
-interface ActionInterface {
-    fun onItemClick(cardId: Int)
-    fun onDeleteCard(cardId: Int)
-}

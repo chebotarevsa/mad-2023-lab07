@@ -1,25 +1,10 @@
 package com.example.lab7
 
 import android.graphics.Bitmap
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-
-sealed class Status(var isProcessed: Boolean = false)
-class Success() : Status()
-class Failed(val message: String) : Status()
-
-open class CustomEmptyTextWatcher : TextWatcher {
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
-    override fun afterTextChanged(s: Editable?) = Unit
-
-}
 
 class EditCardViewModel : ViewModel() {
 
@@ -42,10 +27,16 @@ class EditCardViewModel : ViewModel() {
     private var _image = MutableLiveData<Bitmap?>()
     val image: LiveData<Bitmap?> = _image
 
+    private var database: CardDatabase? = null
+
     fun setCardOfFragment(cardId: Int) {
         if (cardId != -1) {
-            _card.value = Model.getCardById(cardId)
+            _card.value = database!!.cardDao().findById(cardId)
         }
+    }
+
+    fun initDatabase(database: CardDatabase) {
+        this.database = database
     }
 
     fun updateCardById(
@@ -57,12 +48,15 @@ class EditCardViewModel : ViewModel() {
     ) = if (question.isBlank() || example.isBlank() || answer.isBlank() || translation.isBlank()) {
         _status.value = Failed("One or several fields are blank")
     } else {
-        with(Model) {
-            updateCard(
-                card.value!!, question, example, answer, translation, image.value
-            ).also { _card.value = it }
-            updateCardList(cardId, card.value!!)
-        }
+        val newCard = database!!.cardDao().findById(cardId)
+            .copy(
+                question = question,
+                example = example,
+                answer = answer,
+                translation = translation,
+                image = image.value
+            )
+        database!!.cardDao().update(newCard)
         _status.value = Success()
     }
 
@@ -71,13 +65,7 @@ class EditCardViewModel : ViewModel() {
     ) = if (question.isBlank() || example.isBlank() || answer.isBlank() || translation.isBlank()) {
         _status.value = Failed("One or several fields are blank")
     } else {
-        with(Model) {
-            createNewCard(
-                question, example, answer, translation, image
-            ).also {
-                _card.value = it
-                addCardToList(it) }
-        }
+        database!!.cardDao().insert(Card(null, question, example, answer, translation, image))
         _status.value = Success()
     }
 

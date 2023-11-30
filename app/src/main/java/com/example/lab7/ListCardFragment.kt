@@ -23,6 +23,9 @@ class ListCardFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentListCardBinding.inflate(layoutInflater, container, false)
+
+        viewModel.initDatabase(CardDatabase.getInstance(requireContext()))
+
         val recyclerView: RecyclerView = binding.recyclerid
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = CustomRecyclerAdapter(action).apply {
@@ -31,6 +34,8 @@ class ListCardFragment : Fragment() {
             }
         }
         recyclerView.adapter = adapter
+
+
         binding.addbuttonid.setOnClickListener {
             val navAction = ListCardFragmentDirections.actionListCardFragmentToEditCardFragment(-1)
             findNavController().navigate(navAction)

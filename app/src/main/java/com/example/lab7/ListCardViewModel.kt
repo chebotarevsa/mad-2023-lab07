@@ -11,17 +11,22 @@ class ListCardViewModel : ViewModel() {
     private val _card = MutableLiveData<Card>()
     val card: LiveData<Card> = _card
 
-    init {
-        _cards.value = Model.cards
+    private var database: CardDatabase? = null
+    fun initDatabase(database: CardDatabase) {
+        this.database = database
+        _cards.value = database.cardDao().findAll()
+
     }
 
     fun setCardOfFragment(cardId: Int) {
-        _card.value = Model.getCardById(cardId)
+        _card.value = database!!.cardDao().findById(cardId)
     }
 
     fun removeCardById(cardId: Int) {
-        Model.removeCard(cardId)
-        _cards.value = Model.cards
+        with(database!!.cardDao()) {
+            delete(findById(cardId))
+            _cards.value = findAll()
+        }
     }
 
     fun getCardShortData(): String {
