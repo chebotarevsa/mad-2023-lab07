@@ -18,7 +18,7 @@ class EditCardFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<EditCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: EditCardViewModel by viewModels()
+    private val viewModel: EditCardViewModel by viewModels() { EditCardViewModel.Factory }
 
 
     override fun onCreateView(
@@ -26,7 +26,6 @@ class EditCardFragment : Fragment() {
     ): View {
         _binding = FragmentEditCardBinding.inflate(layoutInflater, container, false)
         with(viewModel) {
-            initDatabase(CardDatabase.getInstance(requireContext()))
             setCardOfFragment(cardId)
             with(binding) {
                 card.observe(viewLifecycleOwner) {

@@ -22,7 +22,6 @@ abstract class CardDatabase : RoomDatabase() {
                         context, CardDatabase::class.java, "cardDatabase"
                     )
                         .fallbackToDestructiveMigration()
-                        .allowMainThreadQueries()
                         .build()
                     cardDatabase = databaseInstance
                 }

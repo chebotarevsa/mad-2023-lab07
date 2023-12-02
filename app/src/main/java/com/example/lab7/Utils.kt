@@ -41,6 +41,11 @@ sealed class Status(var isProcessed: Boolean = false)
 class Success : Status()
 class Failed(val message: String) : Status()
 
+sealed class CardFindStatus(var isProcessed: Boolean = false)
+class CardFoundSuccess(val cardShortData: String) : CardFindStatus()
+class CardFoundFailed(val message: String) : CardFindStatus()
+
+
 open class CustomEmptyTextWatcher : TextWatcher {
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 

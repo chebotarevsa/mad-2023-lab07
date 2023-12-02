@@ -16,13 +16,12 @@ class SeeCardFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<SeeCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: SeeCardViewModel by viewModels()
+    private val viewModel: SeeCardViewModel by viewModels { SeeCardViewModel.Factory }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSeeCardBinding.inflate(layoutInflater, container, false)
-        viewModel.initDatabase(CardDatabase.getInstance(requireContext()))
         viewModel.setCardOfFragment(cardId)
         with(binding) {
             viewModel.card.observe(viewLifecycleOwner) {

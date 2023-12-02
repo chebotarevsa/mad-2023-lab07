@@ -17,14 +17,12 @@ class ListCardFragment : Fragment() {
     private var _binding: FragmentListCardBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: CustomRecyclerAdapter
-    private val viewModel: ListCardViewModel by viewModels()
+    private val viewModel: ListCardViewModel by viewModels { ListCardViewModel.Factory }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentListCardBinding.inflate(layoutInflater, container, false)
-
-        viewModel.initDatabase(CardDatabase.getInstance(requireContext()))
 
         val recyclerView: RecyclerView = binding.recyclerid
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -35,10 +33,34 @@ class ListCardFragment : Fragment() {
         }
         recyclerView.adapter = adapter
 
-
         binding.addbuttonid.setOnClickListener {
             val navAction = ListCardFragmentDirections.actionListCardFragmentToEditCardFragment(-1)
             findNavController().navigate(navAction)
+        }
+        viewModel.status.observe(viewLifecycleOwner) {
+            if (it.isProcessed) {
+                return@observe
+            }
+            when(it) {
+                is CardFoundSuccess -> {
+                    AlertDialog.Builder(requireContext())
+                        .setIcon(android.R.drawable.ic_menu_delete)
+                        .setTitle("Вы действительно хотите удалить карточку?")
+                        .setMessage(
+                            "Будет удалена карточка:" + it.cardShortData
+                        )
+                        .setPositiveButton("Да") { _, _ -> viewModel.removeCardById() }
+                        .setNegativeButton("Нет") { _, _ ->
+                            Toast
+                                .makeText(requireContext(), "Удаление отменено", Toast.LENGTH_LONG)
+                                .show()
+                        }.show()
+                }
+                is CardFoundFailed -> {
+
+                }
+            }
+            it.isProcessed = true
         }
         return binding.root
     }
@@ -55,18 +77,7 @@ class ListCardFragment : Fragment() {
         }
 
         override fun onDeleteCard(cardId: Int) {
-            viewModel.setCardOfFragment(cardId)
-            AlertDialog.Builder(requireContext())
-                .setIcon(android.R.drawable.ic_menu_delete)
-                .setTitle("Вы действительно хотите удалить карточку?")
-                .setMessage("Будет удалена карточка:" + viewModel.getCardShortData()
-                )
-                .setPositiveButton("Да") { _, _ -> viewModel.removeCardById(cardId) }
-                .setNegativeButton("Нет") { _, _ ->
-                    Toast
-                        .makeText(requireContext(), "Удаление отменено", Toast.LENGTH_LONG)
-                        .show()
-                }.show()
+            viewModel.findCardForDelete(cardId)
         }
     }
 }
