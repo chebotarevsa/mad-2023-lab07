@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
 class ListCardViewModel(private val database: CardDatabase) : ViewModel() {
-    var cards: LiveData<List<Card>> = database.cardDao().findAll();
+    var cards: LiveData<List<Card>> = database.cardDao().findAll()
 
     fun deleteCard(cardId: Int) {
         thread {
@@ -22,8 +22,7 @@ class ListCardViewModel(private val database: CardDatabase) : ViewModel() {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(
-                modelClass: Class<T>,
-                extras: CreationExtras
+                modelClass: Class<T>, extras: CreationExtras
             ): T {
                 val application =
                     checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])

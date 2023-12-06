@@ -6,8 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Card(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int?,
+    @PrimaryKey(autoGenerate = true) val id: Int?,
     val question: String,
     val example: String,
     val answer: String,

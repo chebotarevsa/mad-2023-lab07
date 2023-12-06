@@ -18,7 +18,7 @@ class EditCardFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<EditCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: EditCardViewModel by viewModels() { EditCardViewModel.Factory(cardId) }
+    private val viewModel: EditCardViewModel by viewModels { EditCardViewModel.Factory(cardId) }
 
 
     override fun onCreateView(
@@ -65,33 +65,23 @@ class EditCardFragment : Fragment() {
                         is Failed -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG)
                             .show()
 
-                        is Success -> if (!viewModel.isNewCard()) {
+                        is Success -> if (!viewModel.checkIfNewCard()) {
                             val navAction =
                                 EditCardFragmentDirections.actionEditCardFragmentToSeeCardFragment(
                                     cardId
                                 )
                             findNavController().navigate(navAction)
                         } else {
-                            val navAction =
-                                EditCardFragmentDirections.actionEditCardFragmentToListCardFragment()
+                            val navAction = EditCardFragmentDirections
+                                .actionEditCardFragmentToListCardFragment()
                             findNavController().navigate(navAction)
                         }
                     }
                     it.isProcessed = true
                 }
                 questionField.addTextChangedListener(object : CustomEmptyTextWatcher() {
-                    var _old: String = "";
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-                        _old = s.toString();
-                    }
-
                     override fun afterTextChanged(s: Editable?) {
-                        validateQuestion(s.toString(), _old)
+                        validateQuestion(s.toString())
                     }
                 })
                 exampleField.addTextChangedListener(object : CustomEmptyTextWatcher() {
@@ -111,7 +101,6 @@ class EditCardFragment : Fragment() {
                 })
                 saveButton.setOnClickListener {
                     viewModel.saveCard(
-                        cardId,
                         questionField.text.toString(),
                         exampleField.text.toString(),
                         answerField.text.toString(),

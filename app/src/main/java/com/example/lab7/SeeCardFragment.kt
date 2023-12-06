@@ -44,8 +44,7 @@ class SeeCardFragment : Fragment() {
                 val navAction = SeeCardFragmentDirections.actionSeeCardFragmentToListCardFragment()
                 findNavController().navigate(navAction)
             }
-            requireActivity().onBackPressedDispatcher.addCallback(
-                viewLifecycleOwner,
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         val action =

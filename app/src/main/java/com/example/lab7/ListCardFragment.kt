@@ -32,7 +32,8 @@ class ListCardFragment : Fragment() {
         recyclerView.adapter = adapter
 
         binding.addbuttonid.setOnClickListener {
-            val navAction = ListCardFragmentDirections.actionListCardFragmentToEditCardFragment(-1)
+            val navAction = ListCardFragmentDirections
+                .actionListCardFragmentToEditCardFragment(-1)
             findNavController().navigate(navAction)
         }
         return binding.root
@@ -45,7 +46,8 @@ class ListCardFragment : Fragment() {
 
     private val action = object : ActionInterface {
         override fun onItemClick(cardId: Int) {
-            val action = ListCardFragmentDirections.actionListCardFragmentToSeeCardFragment(cardId)
+            val action = ListCardFragmentDirections
+                .actionListCardFragmentToSeeCardFragment(cardId)
             findNavController().navigate(action)
         }
 

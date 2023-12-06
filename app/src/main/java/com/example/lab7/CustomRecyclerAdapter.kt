@@ -52,19 +52,13 @@ class CustomRecyclerAdapter(
         holder.deleteImage.setOnClickListener {
             AlertDialog.Builder(holder.deleteImage.context)
                 .setIcon(android.R.drawable.ic_menu_delete)
-                .setTitle("Вы действительно хотите удалить карточку?")
-                .setMessage(
+                .setTitle("Вы действительно хотите удалить карточку?").setMessage(
                     "Будет удалена карточка:" + "\n ${card.answer} / ${card.translation}"
-                )
-                .setPositiveButton("Да") { _, _ -> action.onDeleteCard(card.id!!) }
+                ).setPositiveButton("Да") { _, _ -> action.onDeleteCard(card.id!!) }
                 .setNegativeButton("Нет") { _, _ ->
-                    Toast
-                        .makeText(
-                            holder.deleteImage.context,
-                            "Удаление отменено",
-                            Toast.LENGTH_LONG
-                        )
-                        .show()
+                    Toast.makeText(
+                        holder.deleteImage.context, "Удаление отменено", Toast.LENGTH_LONG
+                    ).show()
                 }.show()
         }
     }
