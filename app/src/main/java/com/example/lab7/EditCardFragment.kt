@@ -18,7 +18,7 @@ class EditCardFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<EditCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: EditCardViewModel by viewModels() { EditCardViewModel.Factory }
+    private val viewModel: EditCardViewModel by viewModels() { EditCardViewModel.Factory(cardId) }
 
 
     override fun onCreateView(
@@ -26,16 +26,15 @@ class EditCardFragment : Fragment() {
     ): View {
         _binding = FragmentEditCardBinding.inflate(layoutInflater, container, false)
         with(viewModel) {
-            setCardOfFragment(cardId)
             with(binding) {
-                card.observe(viewLifecycleOwner) {
-                    questionField.setText(it.question)
-                    exampleField.setText(it.example)
-                    answerField.setText(it.answer)
-                    translationField.setText(it.translation)
-                    if (it.image != null) {
-                        cardImage.setImageBitmap(it.image)
-                        setImage(it.image)
+                card.observe(viewLifecycleOwner) { currentCard ->
+                    questionField.setText(currentCard.question)
+                    exampleField.setText(currentCard.example)
+                    answerField.setText(currentCard.answer)
+                    translationField.setText(currentCard.translation)
+                    if (currentCard.image != null) {
+                        cardImage.setImageBitmap(currentCard.image)
+                        setImage(currentCard.image)
                     } else {
                         cardImage.setImageResource(R.drawable.wallpapericon)
                     }
@@ -47,33 +46,26 @@ class EditCardFragment : Fragment() {
                     getSystemContent.launch("image/*")
                 }
                 questionError.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        questionField.error = it
-                    }
+                    questionField.error = it
                 }
                 exampleError.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        exampleField.error = it
-                    }
+                    exampleField.error = it
                 }
                 answerError.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        answerField.error = it
-                    }
+                    answerField.error = it
                 }
                 translationError.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        translationField.error = it
-                    }
+                    translationField.error = it
                 }
                 status.observe(viewLifecycleOwner) {
                     if (it.isProcessed) {
                         return@observe
                     }
-                    if (it is Failed) {
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                    } else if (it is Success) {
-                        if (cardId != -1) {
+                    when (it) {
+                        is Failed -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG)
+                            .show()
+
+                        is Success -> if (!viewModel.isNewCard()) {
                             val navAction =
                                 EditCardFragmentDirections.actionEditCardFragmentToSeeCardFragment(
                                     cardId
@@ -88,8 +80,18 @@ class EditCardFragment : Fragment() {
                     it.isProcessed = true
                 }
                 questionField.addTextChangedListener(object : CustomEmptyTextWatcher() {
+                    var _old: String = "";
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                        _old = s.toString();
+                    }
+
                     override fun afterTextChanged(s: Editable?) {
-                        validateQuestion(s.toString())
+                        validateQuestion(s.toString(), _old)
                     }
                 })
                 exampleField.addTextChangedListener(object : CustomEmptyTextWatcher() {
@@ -108,23 +110,13 @@ class EditCardFragment : Fragment() {
                     }
                 })
                 saveButton.setOnClickListener {
-                    if (card.value != null) {
-                        updateCardById(
-                            cardId,
-                            questionField.text.toString(),
-                            exampleField.text.toString(),
-                            answerField.text.toString(),
-                            translationField.text.toString(),
-                        )
-                    } else {
-                        addCard(
-                            questionField.text.toString(),
-                            exampleField.text.toString(),
-                            answerField.text.toString(),
-                            translationField.text.toString(),
-                            image.value
-                        )
-                    }
+                    viewModel.saveCard(
+                        cardId,
+                        questionField.text.toString(),
+                        exampleField.text.toString(),
+                        answerField.text.toString(),
+                        translationField.text.toString(),
+                    )
                 }
                 return root
             }

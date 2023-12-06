@@ -1,11 +1,9 @@
 package com.example.lab7
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -37,31 +35,6 @@ class ListCardFragment : Fragment() {
             val navAction = ListCardFragmentDirections.actionListCardFragmentToEditCardFragment(-1)
             findNavController().navigate(navAction)
         }
-        viewModel.status.observe(viewLifecycleOwner) {
-            if (it.isProcessed) {
-                return@observe
-            }
-            when(it) {
-                is CardFoundSuccess -> {
-                    AlertDialog.Builder(requireContext())
-                        .setIcon(android.R.drawable.ic_menu_delete)
-                        .setTitle("Вы действительно хотите удалить карточку?")
-                        .setMessage(
-                            "Будет удалена карточка:" + it.cardShortData
-                        )
-                        .setPositiveButton("Да") { _, _ -> viewModel.removeCardById() }
-                        .setNegativeButton("Нет") { _, _ ->
-                            Toast
-                                .makeText(requireContext(), "Удаление отменено", Toast.LENGTH_LONG)
-                                .show()
-                        }.show()
-                }
-                is CardFoundFailed -> {
-
-                }
-            }
-            it.isProcessed = true
-        }
         return binding.root
     }
 
@@ -77,7 +50,7 @@ class ListCardFragment : Fragment() {
         }
 
         override fun onDeleteCard(cardId: Int) {
-            viewModel.findCardForDelete(cardId)
+            viewModel.deleteCard(cardId)
         }
     }
 }

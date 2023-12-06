@@ -10,10 +10,10 @@ import androidx.room.Update
 @Dao
 interface CardDao {
     @Insert
-    fun insert(vararg cards: Card)
+    suspend fun insert(vararg cards: Card)
 
     @Insert
-    fun insert(card: Card)
+    suspend fun insert(card: Card)
 
     @Query("SELECT * FROM card")
     fun findAll(): LiveData<List<Card>>
@@ -25,8 +25,8 @@ interface CardDao {
     fun findById(id: Int): LiveData<Card>
 
     @Update
-    fun update(card: Card): Int
+    suspend fun update(card: Card): Int
 
     @Delete
-    fun delete(card: Card): Int
+    suspend fun delete(card: Card): Int
 }

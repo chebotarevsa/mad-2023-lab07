@@ -1,42 +1,20 @@
 package com.example.lab7
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.launch
 import kotlin.concurrent.thread
 
 class ListCardViewModel(private val database: CardDatabase) : ViewModel() {
+    var cards: LiveData<List<Card>> = database.cardDao().findAll();
 
-    private val _cards = MediatorLiveData<List<Card>>()
-    val cards: LiveData<List<Card>> = _cards
-    private val _card = MediatorLiveData<Card>()
-    val card: LiveData<Card> = _card
-
-    private var _status = MediatorLiveData<CardFindStatus>()
-    val status: LiveData<CardFindStatus> = _status
-
-    init {
-        _cards.addSource(database.cardDao().findAll()) {
-            _cards.value = it
-        }
-    }
-
-    fun findCardForDelete(cardId: Int) {
-        _status.addSource(database.cardDao().findById(cardId)) {
-            _card.value = it
-            _status.value = CardFoundSuccess("\n ${it.answer} / ${it.translation}")
-        }
-    }
-
-    fun removeCardById() {
-        with(database.cardDao()) {
-            _card.value?.let {
-                thread { delete(it) }
-            }
+    fun deleteCard(cardId: Int) {
+        thread {
+            val card = cards.value?.first { it.id == cardId }
+            card?.let { viewModelScope.launch { database.cardDao().delete(it) } }
         }
     }
 
