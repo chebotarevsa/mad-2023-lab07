@@ -16,7 +16,7 @@ class ViewCardFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<ViewCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: ViewCardViewModel by viewModels()
+    private val viewModel: ViewCardViewModel by viewModels { ViewCardViewModel.Factory(cardId) }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -25,18 +25,15 @@ class ViewCardFragment : Fragment() {
 
 
         with(viewModel) {
-            setCardToView(cardId)
             card.observe(viewLifecycleOwner) {
                 binding.questionTextCard.text = getString(R.string.questionT, it.question)
                 binding.hintTextCard.text = getString(R.string.hintT, it.example)
                 binding.answerTextCard.text = getString(R.string.answerT, it.answer)
-                binding.translationTextCard.text = getString(R.string.translateT, it.translate)
-                if(it.image==null) {
+                binding.translationTextCard.text = getString(R.string.translateT, it.translation)
+                if (it.image == null) {
                     binding.cardImage.setImageResource(R.drawable.panorama_outline)
-                }
-                else{
+                } else {
                     binding.cardImage.setImageBitmap(it.image)
-                    setImageToCard(it.image)
                 }
             }
         }
@@ -49,8 +46,7 @@ class ViewCardFragment : Fragment() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val action =
-                        ViewCardFragmentDirections.actionViewCardFragmentToMainFragment()
+                    val action = ViewCardFragmentDirections.actionViewCardFragmentToMainFragment()
                     findNavController().navigate(action)
                 }
             })

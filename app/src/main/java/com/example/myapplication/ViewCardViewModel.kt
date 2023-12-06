@@ -4,17 +4,23 @@ import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.CreationExtras
 
-class ViewCardViewModel : ViewModel() {
-    private var _card = MutableLiveData<Card>()
-    val card: LiveData<Card> = _card
-    private var _image = MutableLiveData<Bitmap?>()
-    val image: LiveData<Bitmap?> = _image
-    fun setCardToView(cardId: Int) {
-        _card.value = Model.getCardById(cardId)
-    }
-    fun setImageToCard(image: Bitmap?){
-        _image.value=image
+class ViewCardViewModel(private val database: CardDB, val cardId: Int) : ViewModel() {
+    val card = database.cardDAO().findById(cardId)
+
+    companion object {
+        fun Factory(cardId: Int): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>, extras: CreationExtras
+            ): T {
+                val application = checkNotNull(extras[APPLICATION_KEY])
+                return ViewCardViewModel(CardDB.getInstance(application), cardId) as T
+            }
+        }
     }
 
 }

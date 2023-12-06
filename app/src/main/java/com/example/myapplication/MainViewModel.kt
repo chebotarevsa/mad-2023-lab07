@@ -3,22 +3,42 @@ package com.example.myapplication
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 
-class MainViewModel : ViewModel() {
-    private val _cards = MutableLiveData<List<Card>>()
-    val cards: LiveData<List<Card>> = _cards
-    private val _card = MutableLiveData<Card>()
+class MainViewModel(private val database: CardDB) : ViewModel() {
+    var cards: LiveData<List<Card>> = database.cardDAO().findAllCard()
+    private var _card = MutableLiveData<Card>()
     val card: LiveData<Card> = _card
-    fun setCardList() {
-        _cards.value = Model.cards
+
+    fun deleteCardById(cardId: Int) {
+        thread {
+            val card = cards.value?.first { it.id == cardId }
+            card?.let { viewModelScope.launch { database.cardDAO().delete(it) } }
+        }
     }
 
     fun setCardToDelete(cardId: Int) {
-        _card.value = Model.getCardById(cardId)
+        _card.value = database.cardDAO().findById(cardId).value
     }
 
-    fun deleteCardById(cardId: Int) {
-        Model.removeCard(cardId)
-        _cards.value = Model.cards
+    fun setCardList() {
+        cards = database.cardDAO().findAllCard()
+    }
+
+    companion object {
+        fun Factory(): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>, extras: CreationExtras
+            ): T {
+                val application = checkNotNull(extras[APPLICATION_KEY])
+                return MainViewModel(CardDB.getInstance(application)) as T
+            }
+        }
     }
 }

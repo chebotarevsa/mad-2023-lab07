@@ -17,7 +17,7 @@ class EditCardFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<EditCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: EditCardViewModel by viewModels()
+    private val viewModel: EditCardViewModel by viewModels { EditCardViewModel.Factory(cardId) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -26,17 +26,15 @@ class EditCardFragment : Fragment() {
         _binding = FragmentEditCardBinding.inflate(layoutInflater, container, false)
 
         with(viewModel) {
-            setCardToEdit(cardId)
             with(binding) {
                 card.observe(viewLifecycleOwner) {
                     questionEditText.setText(it.question)
                     hintEditText.setText(it.example)
                     answerEditText.setText(it.answer)
-                    translationEditText.setText(it.translate)
-                    if(it.image==null) {
+                    translationEditText.setText(it.translation)
+                    if (it.image == null) {
                         cardImage.setImageResource(R.drawable.panorama_outline)
-                    }
-                    else{
+                    } else {
                         cardImage.setImageBitmap(it.image)
                         setImageToCard(it.image)
                     }
@@ -46,12 +44,11 @@ class EditCardFragment : Fragment() {
 
         binding.fab.setOnClickListener {
             viewModel.editCard(
-                viewModel.card.value!!.id,
+                viewModel.card.value!!.id!!,
                 binding.questionEditText.text.toString(),
                 binding.hintEditText.text.toString(),
                 binding.answerEditText.text.toString(),
-                binding.translationEditText.text.toString(),
-                viewModel.image.value
+                binding.translationEditText.text.toString()
             )
 
             val action = EditCardFragmentDirections.actionEditCardFragmentToViewCardFragment(cardId)
@@ -60,6 +57,9 @@ class EditCardFragment : Fragment() {
 
         binding.cardImage.setOnClickListener {
             getSystemContent.launch("image/*")
+        }
+        viewModel.image.observe(viewLifecycleOwner) {
+            binding.cardImage.setImageBitmap(it)
         }
         return binding.root
     }

@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 class AddCardFragment : Fragment() {
     private var _binding: FragmentAddCardBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: AddCardViewModel by viewModels()
+    private val viewModel: AddCardViewModel by viewModels { AddCardViewModel.Factory() }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -28,14 +28,20 @@ class AddCardFragment : Fragment() {
                 val example = binding.hintAddText.text.toString()
                 val answer = binding.answerAddText.text.toString()
                 val translation = binding.translationAddText.text.toString()
-                viewModel.addCard(question, example, answer, translation, viewModel.image.value)
+                viewModel.addCard(question, example, answer, translation)
+                if (viewModel.card.value!!.image != null) {
+                    binding.cardImage.setImageBitmap(viewModel.card.value!!.image)
+                    viewModel.setImageToCard(viewModel.card.value!!.image)
+                } else {
+                    binding.cardImage.setImageResource(R.drawable.panorama_outline)
+                }
                 val action = AddCardFragmentDirections.actionAddCardFragmentToMainFragment()
                 findNavController().navigate(action)
             } else {
                 fieldsIncompleteError()
             }
         }
-        viewModel.image.observe(viewLifecycleOwner){
+        viewModel.image.observe(viewLifecycleOwner) {
             binding.cardImage.setImageBitmap(it)
         }
         binding.cardImage.setOnClickListener {
