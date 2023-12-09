@@ -1,6 +1,5 @@
 package com.example.lab7mobile
 
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -27,6 +28,7 @@ class AddCardFragment : Fragment() {
     private val args by navArgs<AddCardFragmentArgs>()
     private val index by lazy { args.id }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,8 +45,7 @@ class AddCardFragment : Fragment() {
             if (card.image != null) {
                 viewModel.setImageBitmap(card.image)
             } else {
-                val defaultImageBitmap = BitmapFactory.decodeResource(resources, R.drawable.ic_image)
-                viewModel.setImageBitmap(defaultImageBitmap)
+                setupDefaultImage()
             }
         }
 
@@ -89,5 +90,12 @@ class AddCardFragment : Fragment() {
 
         viewModel.addOrUpdateCard(question, hint, answer, translate, image, index)
         findNavController().popBackStack()
+    }
+
+    private fun setupDefaultImage() {
+        val imageWidth = getResources().getDimension(R.dimen.WidthimageViewAddCard).toInt()
+        val imageHeight = getResources().getDimension(R.dimen.HeightimageViewAddCard).toInt()
+        val yourBitmap = getDrawable(requireContext(), R.drawable.ic_image)!!.toBitmap(imageWidth, imageHeight)
+        viewModel.setImageBitmap(yourBitmap)
     }
 }
