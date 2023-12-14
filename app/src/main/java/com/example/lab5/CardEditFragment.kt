@@ -16,7 +16,7 @@ import com.example.lab5.databinding.FragmentCardEditBinding
 class CardEditFragment : Fragment() {
     private var _binding: FragmentCardEditBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: CardEditViewModel by viewModels()
+    private val viewModel: CardEditViewModel by viewModels { CardEditViewModel.Factory(cardId) }
 
     private val args by navArgs<CardEditFragmentArgs>()
     private val cardId by lazy { args.cardId }
@@ -28,16 +28,16 @@ class CardEditFragment : Fragment() {
         _binding = FragmentCardEditBinding.inflate(layoutInflater, container, false)
 
         with(viewModel) {
-            setCardOfFragment(cardId)
             with(binding) {
-                сard.observe(viewLifecycleOwner) {
-                    questionField.setText(it.question)
-                    exampleField.setText(it.example)
-                    answerField.setText(it.answer)
-                    translationField.setText(it.translation)
-                    if (it.image != null) {
-                        cardImage.setImageBitmap(it.image)
-                        setImage(it.image)
+
+                сard.observe(viewLifecycleOwner) { currentCard ->
+                    questionField.setText(currentCard.question)
+                    exampleField.setText(currentCard.example)
+                    answerField.setText(currentCard.answer)
+                    translationField.setText(currentCard.translation)
+                    if (currentCard.image != null) {
+                        cardImage.setImageBitmap(currentCard.image)
+                        setImage(currentCard.image)
                     } else {
                         cardImage.setImageResource(R.drawable.empty)
                     }
@@ -49,33 +49,27 @@ class CardEditFragment : Fragment() {
                     getSystemContent.launch("image/*")
                 }
                 question_error.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        questionField.error = it
-                    }
+                    questionField.error = it
                 }
                 example_error.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        exampleField.error = it
-                    }
+                    exampleField.error = it
                 }
                 answer_error.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        answerField.error = it
-                    }
+                    answerField.error = it
                 }
                 translation_error.observe(viewLifecycleOwner) {
-                    if (it.isNotBlank()) {
-                        translationField.error = it
-                    }
+                    translationField.error = it
                 }
                 status.observe(viewLifecycleOwner) {
                     if (it.isProcessed) {
                         return@observe
                     }
-                    if (it is Failed) {
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                    } else if (it is Success) {
-                        if (cardId != -1) {
+
+                    when (it) {
+                        is Failed -> Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG)
+                            .show()
+
+                        is Success -> if (!viewModel.checkIfNewCard()) {
                             val navAction =
                                 CardEditFragmentDirections.actionCardEditFragmentToCardSeeFragment(
                                     cardId
@@ -110,28 +104,18 @@ class CardEditFragment : Fragment() {
                     }
                 })
                 saveButton.setOnClickListener {
-                    if (сard.value != null) {
-                        updateCardById(
-                            cardId,
-                            questionField.text.toString(),
-                            exampleField.text.toString(),
-                            answerField.text.toString(),
-                            translationField.text.toString(),
-                        )
-                    } else {
-                        addCard(
-                            questionField.text.toString(),
-                            exampleField.text.toString(),
-                            answerField.text.toString(),
-                            translationField.text.toString(),
-                            image.value
-                        )
-                    }
+                    viewModel.saveCard(
+                        questionField.text.toString(),
+                        exampleField.text.toString(),
+                        answerField.text.toString(),
+                        translationField.text.toString(),
+                    )
                 }
                 return root
             }
+        }
     }
-    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

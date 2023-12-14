@@ -16,20 +16,20 @@ class CardSeeFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<CardSeeFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val view_model: CardSeeViewModel by viewModels()
+    private val view_model: CardSeeViewModel by viewModels { CardSeeViewModel.Factory(cardId) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentCardSeeBinding.inflate(layoutInflater)
-        view_model.setCardOfFragment(cardId)
         with(binding) {
             view_model.list_cards.observe(viewLifecycleOwner) {
                 textQuestion.text = getString(R.string.questionField, it.question)
                 textExample.text = getString(R.string.exampleField, it.example)
                 textAnswer.text = getString(R.string.answerField, it.answer)
                 textTranslation.text = getString(R.string.translationField, it.translation)
+                idNumber.text = it.id.toString()
                 if (it.image != null) {
                     picture.setImageBitmap(it.image)
                 } else {

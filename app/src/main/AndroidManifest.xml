@@ -13,7 +13,7 @@
         android:theme="@style/Theme.AppCompat.Light"
         tools:targetApi="34">
         <activity
-            android:name=".CardListActivity"
+            android:name=".MyActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
