@@ -50,7 +50,7 @@ class AdapterRecyclerView(private val action: ActionInterface) :
         get() = field
 }
 
-interface ActionInterface {
-    fun onItemClick(cardId: Int)
-    fun onDeleteCard(cardId: Int)
-}
+//interface ActionInterface {
+//    fun onItemClick(cardId: Int)
+//    fun onDeleteCard(cardId: Int)
+//}

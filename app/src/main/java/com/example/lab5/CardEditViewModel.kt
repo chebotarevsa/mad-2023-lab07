@@ -8,19 +8,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 
-sealed class Status(var isProcessed: Boolean = false) //Запечатанный класс - ограничние наследников
-class Success() : Status() //Успешно
-class Failed(val message: String) : Status() //Неуспешно
-
-open class CustomEmptyTextWatcher : TextWatcher { //Открытый класс, слежение за текстом
-    //Методы для текста
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
-    override fun afterTextChanged(s: Editable?) = Unit
-
-} //Unit - нет возвращаемого
+//sealed class Status(var isProcessed: Boolean = false) //Запечатанный класс - ограничние наследников
+//class Success() : Status() //Успешно
+//class Failed(val message: String) : Status() //Неуспешно
+//
+//open class CustomEmptyTextWatcher : TextWatcher { //Открытый класс, слежение за текстом
+//    //Методы для текста
+//    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+//
+//    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+//
+//    override fun afterTextChanged(s: Editable?) = Unit
+//
+//} //Unit - нет возвращаемого
 class CardEditViewModel : ViewModel() {
     private var Mcard = MutableLiveData<Card>()
     val сard: LiveData<Card> = Mcard
