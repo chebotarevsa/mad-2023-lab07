@@ -1,4 +1,4 @@
-package com.example.lab5
+package com.example.lab5 //ПОМЕНЯТЬ УДАЛЕНИЕ КАТОЧКИ
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,16 +6,19 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.widget.Toast
 
 class AdapterRecyclerView(private val action: ActionInterface) :
-    RecyclerView.Adapter<AdapterRecyclerView.MyViewHolder>() { //Наследуется от <постонно>
-    class MyViewHolder(itemView: View) : //<постонно>
-        RecyclerView.ViewHolder(itemView) { //Тут лежат элементы интерфейса карточки, которая лежит в списке
+    RecyclerView.Adapter<AdapterRecyclerView.MyViewHolder>() {
+    class MyViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
         val thumbnailImage: ImageView = itemView.findViewById(R.id.pictureSmall)
         val largeTextView: TextView = itemView.findViewById(R.id.textAbove)
         val smallTextView: TextView = itemView.findViewById(R.id.textBelow)
         val deleteImage: ImageView = itemView.findViewById(R.id.delete)
-    } //ВРОДЕ поиск по данной карточке в списке тех элементов, что лежат в ней (дальше передавать сам card должны?)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemView =
@@ -27,6 +30,7 @@ class AdapterRecyclerView(private val action: ActionInterface) :
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val card = cards[position]
+        holder.itemView.tag = card.id
         if (card.image != null) {
             holder.thumbnailImage.setImageBitmap(cards[position].image)
         } else {
@@ -35,22 +39,26 @@ class AdapterRecyclerView(private val action: ActionInterface) :
         holder.largeTextView.text = card.answer
         holder.smallTextView.text = card.translation
         holder.itemView.setOnClickListener {
-            action.onItemClick(card.id)
+            action.onItemClick(card.id!!)
         }
         holder.deleteImage.setOnClickListener {
-            action.onDeleteCard(card.id)
+            AlertDialog.Builder(holder.deleteImage.context)
+                .setIcon(android.R.drawable.ic_menu_delete)
+                .setTitle("Удаление").setMessage(
+                    "Удалить карточку:" + "\n ${card.answer}"
+                ).setPositiveButton("Да") { _, _ -> action.onDeleteCard(card.id!!) }
+                .setNegativeButton("Нет") { _, _ ->
+                    Toast.makeText(
+                        holder.deleteImage.context, "Отмена удаления", Toast.LENGTH_LONG
+                    ).show()
+                }.show()
         }
     }
 
     var cards: List<Card> = emptyList()
-        set(value) {
+        @SuppressLint("NotifyDataSetChanged") set(value) {
             field = value
             notifyDataSetChanged()
         }
-        get() = field
 }
 
-//interface ActionInterface {
-//    fun onItemClick(cardId: Int)
-//    fun onDeleteCard(cardId: Int)
-//}
