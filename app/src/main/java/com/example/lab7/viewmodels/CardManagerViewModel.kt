@@ -27,13 +27,9 @@ class CardManagerViewModel(private val cardRepository: CardRepository, private v
     val card: LiveData<Card> = _card
 
     private var _questionError = MutableLiveData<String>()
-    val questionError: LiveData<String> = _questionError
     private var _exampleError = MutableLiveData<String>()
-    val exampleError: LiveData<String> = _exampleError
     private var _answerError = MutableLiveData<String>()
-    val answerError: LiveData<String> = _answerError
     private var _translationError = MutableLiveData<String>()
-    val translationError: LiveData<String> = _translationError
     private var _image = MutableLiveData<Bitmap?>()
     val image: LiveData<Bitmap?> = _image
 

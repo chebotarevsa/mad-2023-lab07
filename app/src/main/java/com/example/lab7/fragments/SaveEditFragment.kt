@@ -1,6 +1,5 @@
 package com.example.lab7.fragments
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
@@ -24,7 +23,6 @@ class SaveEditFragment : Fragment() {
 
     private var _binding: FragmentSaveEditBinding? = null
     private val binding get() = _binding!!
-    private var image: Bitmap? = null
     private val args by navArgs<SaveEditFragmentArgs>()
     private val cardId by lazy { args.cardId }
     private val viewModel: CardManagerViewModel by viewModels { CardManagerViewModel.Factory(cardId) }
@@ -34,9 +32,6 @@ class SaveEditFragment : Fragment() {
     ): View {
         _binding = FragmentSaveEditBinding.inflate(layoutInflater, container, false)
         observeCardAndImage()
-        binding.cardImage.setOnClickListener {
-            getSystemContent.launch("image/*")
-        }
         viewModel.status.observe(viewLifecycleOwner) {
             if (it.isProcessed) {
                 return@observe
@@ -62,6 +57,9 @@ class SaveEditFragment : Fragment() {
         binding.saveButton.setOnClickListener {
             createOrUpdateCard()
         }
+        binding.cardImage.setOnClickListener {
+            getSystemContent.launch("image/*")
+        }
         return binding.root
     }
 
@@ -71,7 +69,7 @@ class SaveEditFragment : Fragment() {
             binding.exampleField.setText(it.example)
             binding.answerField.setText(it.answer)
             binding.translationField.setText(it.translation)
-            if (it.image != null) {
+            if (viewModel.card.value?.image != null) {
                 binding.cardImage.setImageBitmap(it.image)
                 viewModel.setImage(it.image)
             } else {
@@ -116,8 +114,7 @@ class SaveEditFragment : Fragment() {
     }
 
     private val getSystemContent = registerForActivityResult(ActivityResultContracts.GetContent()) {
-        image = it.bitmap(requireContext())
-        binding.cardImage.setImageBitmap(image)
+        viewModel.setImage(it.bitmap(requireContext()))
     }
 
     override fun onDestroy() {
