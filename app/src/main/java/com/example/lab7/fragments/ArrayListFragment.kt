@@ -1,4 +1,4 @@
-package com.example.lab7
+package com.example.lab7.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -11,6 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lab7.util.ActionInterface
+import com.example.lab7.viewmodels.ArrayListViewModel
+import com.example.lab7.service.CustomRecyclerAdapter
 import com.example.lab7.databinding.FragmentArrayListBinding
 
 class ArrayListFragment : Fragment() {
@@ -33,19 +36,25 @@ class ArrayListFragment : Fragment() {
         }
         recyclerView.adapter = adapter
         binding.addbuttonid.setOnClickListener {
-            val action = ArrayListFragmentDirections.actionListCardFragmentToEditCardFragment(-1)
+            val action =
+                ArrayListFragmentDirections.actionListCardFragmentToEditCardFragment(
+                    "-1"
+                )
             findNavController().navigate(action)
         }
         return binding.root
     }
 
     private val action = object : ActionInterface {
-        override fun onItemClick(cardId: Int) {
-            val action = ArrayListFragmentDirections.actionListCardFragmentToSeeCardFragment(cardId)
+        override fun onItemClick(cardId: String) {
+            val action =
+                ArrayListFragmentDirections.actionListCardFragmentToSeeCardFragment(
+                    cardId
+                )
             findNavController().navigate(action)
         }
 
-        override fun onDeleteCard(cardId: Int) {
+        override fun onDeleteCard(cardId: String) {
             viewModel.setCard(cardId)
             AlertDialog.Builder(requireContext()).setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Вы действительно хотите удалить карточку?")

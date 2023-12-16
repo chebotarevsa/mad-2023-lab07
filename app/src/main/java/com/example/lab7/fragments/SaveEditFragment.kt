@@ -1,4 +1,4 @@
-package com.example.lab7
+package com.example.lab7.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -12,6 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.lab7.viewmodels.CardManagerViewModel
+import com.example.lab7.util.CustomEmptyTextWatcher
+import com.example.lab7.util.Failed
+import com.example.lab7.R
+import com.example.lab7.util.Success
+import com.example.lab7.util.bitmap
 import com.example.lab7.databinding.FragmentSaveEditBinding
 
 class SaveEditFragment : Fragment() {
@@ -39,7 +45,7 @@ class SaveEditFragment : Fragment() {
             if (it is Failed) {
                 Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
             } else if (it is Success) {
-                if (cardId != -1) {
+                if (cardId != "-1") {
                     val navAction =
                         SaveEditFragmentDirections.actionEditCardFragmentToSeeCardFragment(
                             cardId

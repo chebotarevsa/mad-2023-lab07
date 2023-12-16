@@ -1,4 +1,4 @@
-package com.example.lab7
+package com.example.lab7.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.lab7.R
+import com.example.lab7.viewmodels.SeeViewModel
 import com.example.lab7.databinding.FragmentSeeBinding
 
 class SeeFragment : Fragment() {
@@ -30,7 +32,10 @@ class SeeFragment : Fragment() {
         observeCardAndImage()
 
         binding.editButton.setOnClickListener {
-            val action = SeeFragmentDirections.actionSeeCardFragmentToEditCardFragment(cardId)
+            val action =
+                SeeFragmentDirections.actionSeeCardFragmentToEditCardFragment(
+                    cardId
+                )
             findNavController().navigate(action)
         }
         requireActivity().onBackPressedDispatcher.addCallback(

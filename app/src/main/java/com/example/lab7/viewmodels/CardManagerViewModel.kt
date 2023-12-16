@@ -1,9 +1,14 @@
-package com.example.lab7
+package com.example.lab7.viewmodels
 
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.lab7.db.entity.Card
+import com.example.lab7.service.CardService
+import com.example.lab7.util.Failed
+import com.example.lab7.util.Status
+import com.example.lab7.util.Success
 
 class CardManagerViewModel : ViewModel() {
 
@@ -13,19 +18,15 @@ class CardManagerViewModel : ViewModel() {
     val image: LiveData<Bitmap?> = _image
 
     private var _questionError = MutableLiveData<String>()
-    val questionError: LiveData<String> = _questionError
     private var _exampleError = MutableLiveData<String>()
-    val exampleError: LiveData<String> = _exampleError
     private var _answerError = MutableLiveData<String>()
-    val answerError: LiveData<String> = _answerError
     private var _translationError = MutableLiveData<String>()
-    val translationError: LiveData<String> = _translationError
 
     private var _status = MutableLiveData<Status>()
     val status: LiveData<Status> = _status
 
-    fun setCard(cardId: Int) {
-        if (cardId != -1) {
+    fun setCard(cardId: String) {
+        if (cardId != "-1") {
             _card.value = CardService.getCardById(cardId)
         }
     }
@@ -47,7 +48,7 @@ class CardManagerViewModel : ViewModel() {
     }
 
     fun updateCardById(
-        cardId: Int,
+        cardId: String,
         question: String,
         example: String,
         answer: String,

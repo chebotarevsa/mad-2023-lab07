@@ -1,4 +1,4 @@
-package com.example.lab7
+package com.example.lab7.service
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lab7.R
+import com.example.lab7.db.entity.Card
+import com.example.lab7.util.ActionInterface
 
 class CustomRecyclerAdapter(
     private val action: ActionInterface,
