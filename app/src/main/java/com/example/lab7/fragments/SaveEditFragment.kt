@@ -12,13 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.lab7.viewmodels.CardManagerViewModel
+import com.example.lab7.R
+import com.example.lab7.databinding.FragmentSaveEditBinding
 import com.example.lab7.util.CustomEmptyTextWatcher
 import com.example.lab7.util.Failed
-import com.example.lab7.R
 import com.example.lab7.util.Success
 import com.example.lab7.util.bitmap
-import com.example.lab7.databinding.FragmentSaveEditBinding
+import com.example.lab7.viewmodels.CardManagerViewModel
 
 class SaveEditFragment : Fragment() {
 
@@ -27,13 +27,12 @@ class SaveEditFragment : Fragment() {
     private var image: Bitmap? = null
     private val args by navArgs<SaveEditFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: CardManagerViewModel by viewModels()
+    private val viewModel: CardManagerViewModel by viewModels { CardManagerViewModel.Factory(cardId) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSaveEditBinding.inflate(layoutInflater, container, false)
-        viewModel.setCard(cardId)
         observeCardAndImage()
         binding.cardImage.setOnClickListener {
             getSystemContent.launch("image/*")
@@ -108,23 +107,12 @@ class SaveEditFragment : Fragment() {
     }
 
     private fun createOrUpdateCard() {
-        if (viewModel.card.value != null) {
-            viewModel.updateCardById(
-                cardId,
-                binding.questionField.text.toString(),
-                binding.exampleField.text.toString(),
-                binding.answerField.text.toString(),
-                binding.translationField.text.toString(),
-            )
-        } else {
-            viewModel.addCard(
-                binding.questionField.text.toString(),
-                binding.exampleField.text.toString(),
-                binding.answerField.text.toString(),
-                binding.translationField.text.toString(),
-                viewModel.image.value
-            )
-        }
+        viewModel.saveCard(
+            binding.questionField.text.toString(),
+            binding.exampleField.text.toString(),
+            binding.answerField.text.toString(),
+            binding.translationField.text.toString(),
+        )
     }
 
     private val getSystemContent = registerForActivityResult(ActivityResultContracts.GetContent()) {

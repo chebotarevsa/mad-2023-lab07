@@ -10,6 +10,8 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.room.TypeConverter
+import com.example.lab7.db.entity.Card
+import com.example.lab7.db.entity.CardEntity
 import java.io.ByteArrayOutputStream
 
 fun Uri?.bitmap(context: Context): Bitmap? {
@@ -21,6 +23,9 @@ fun Uri?.bitmap(context: Context): Bitmap? {
         }
     }
 }
+
+fun Card.toDb(): CardEntity =
+    CardEntity(id, question, example, answer, translation, image)
 
 class Converters {
 

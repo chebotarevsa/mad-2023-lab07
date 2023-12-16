@@ -16,6 +16,3 @@ data class CardEntity(
     val translation: String,
     val image: Bitmap? = null
 )
-
-fun Card.toDb(): CardEntity =
-    CardEntity(id, question, example, answer, translation, image)

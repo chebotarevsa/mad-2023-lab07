@@ -19,7 +19,7 @@ class SeeFragment : Fragment() {
     private val binding get() = _binding!!
     private val args by navArgs<SeeFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: SeeViewModel by viewModels()
+    private val viewModel: SeeViewModel by viewModels{SeeViewModel.Factory(cardId)}
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,7 +27,6 @@ class SeeFragment : Fragment() {
     ): View {
         super.onCreate(savedInstanceState)
         _binding = FragmentSeeBinding.inflate(layoutInflater, container, false)
-        viewModel.setCard(cardId)
 
         observeCardAndImage()
 

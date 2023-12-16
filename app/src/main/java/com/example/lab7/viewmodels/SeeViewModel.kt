@@ -1,17 +1,28 @@
 package com.example.lab7.viewmodels
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.lab7.db.entity.Card
-import com.example.lab7.service.CardService
+import com.example.lab7.db.repository.CardRepository
 
-class SeeViewModel : ViewModel() {
+class SeeViewModel(cardRepository: CardRepository, cardId: String) : ViewModel() {
 
-    private var _card = MutableLiveData<Card>()
-    val card: LiveData<Card> = _card
+    val card: LiveData<Card> = cardRepository.findById(cardId)
 
-    fun setCard(cardId: String) {
-        _card.value = CardService.getCardById(cardId)
+    companion object {
+
+        fun Factory(cardId: String): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    modelClass: Class<T>, extras: CreationExtras
+                ): T {
+                    val application =
+                        checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+                    return SeeViewModel(CardRepository.getInstance(application), cardId) as T
+                }
+            }
     }
 }

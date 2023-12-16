@@ -17,6 +17,9 @@ interface CardDao {
     @Insert
     suspend fun insert(card: CardEntity)
 
+    @Insert
+    suspend fun insert(card: List<CardEntity>)
+
     @Query("SELECT * FROM CardEntity")
     fun findAll(): LiveData<List<Card>>
 
@@ -24,7 +27,7 @@ interface CardDao {
     fun findByTranslation(translation: String): LiveData<Card>
 
     @Query("SELECT * FROM CardEntity WHERE id=:id LIMIT 1")
-    fun findById(id: Int): LiveData<Card>
+    fun findById(id: String): LiveData<Card>
 
     @Update
     suspend fun update(card: CardEntity): Int

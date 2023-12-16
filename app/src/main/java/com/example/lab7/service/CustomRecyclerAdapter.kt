@@ -1,11 +1,13 @@
 package com.example.lab7.service
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lab7.R
 import com.example.lab7.db.entity.Card
@@ -44,7 +46,16 @@ class CustomRecyclerAdapter(
             action.onItemClick(card.id)
         }
         holder.deleteImage.setOnClickListener {
-            action.onDeleteCard(card.id)
+            AlertDialog.Builder(holder.deleteImage.context)
+                .setIcon(android.R.drawable.ic_menu_delete)
+                .setTitle("Вы действительно хотите удалить карточку?").setMessage(
+                    "Будет удалена карточка:" + "\n ${card.answer} / ${card.translation}"
+                ).setPositiveButton("Да") { _, _ -> action.onDeleteCard(card.id!!) }
+                .setNegativeButton("Нет") { _, _ ->
+                    Toast.makeText(
+                        holder.deleteImage.context, "Удаление отменено", Toast.LENGTH_LONG
+                    ).show()
+                }.show()
         }
     }
 

@@ -1,28 +1,37 @@
 package com.example.lab7.viewmodels
 
+import com.example.lab7.db.repository.CardRepository
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.lab7.db.entity.Card
-import com.example.lab7.service.CardService
+import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 
-class ArrayListViewModel : ViewModel() {
+class ArrayListViewModel(private val cardRepository: CardRepository) : ViewModel() {
 
-    private val _cards = MutableLiveData<List<Card>>()
-    val cards: LiveData<List<Card>> = _cards
-    private val _card = MutableLiveData<Card>()
-    val card: LiveData<Card> = _card
+    val cards: LiveData<List<Card>> = cardRepository.findAll()
 
-    init {
-        _cards.value = CardService.cards
+    fun deleteCard(cardId: String) {
+        thread {
+            val card = cards.value?.first { it.id == cardId }
+            card?.let { viewModelScope.launch { cardRepository.delete(it) } }
+        }
     }
 
-    fun setCard(cardId: String) {
-        _card.value = CardService.getCardById(cardId)
-    }
+    companion object {
 
-    fun removeCardById(cardId: String) {
-        CardService.removeCard(cardId)
-        _cards.value = CardService.cards
+        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>, extras: CreationExtras
+            ): T {
+                val application =
+                    checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+                return ArrayListViewModel(CardRepository.getInstance(application)) as T
+            }
+        }
     }
 }

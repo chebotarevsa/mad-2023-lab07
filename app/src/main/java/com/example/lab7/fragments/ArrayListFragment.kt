@@ -1,27 +1,25 @@
 package com.example.lab7.fragments
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lab7.databinding.FragmentArrayListBinding
+import com.example.lab7.service.CustomRecyclerAdapter
 import com.example.lab7.util.ActionInterface
 import com.example.lab7.viewmodels.ArrayListViewModel
-import com.example.lab7.service.CustomRecyclerAdapter
-import com.example.lab7.databinding.FragmentArrayListBinding
 
 class ArrayListFragment : Fragment() {
 
     private var _binding: FragmentArrayListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: CustomRecyclerAdapter
-    private val viewModel: ArrayListViewModel by viewModels()
+    private val viewModel: ArrayListViewModel by viewModels{ArrayListViewModel.Factory}
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -55,17 +53,7 @@ class ArrayListFragment : Fragment() {
         }
 
         override fun onDeleteCard(cardId: String) {
-            viewModel.setCard(cardId)
-            AlertDialog.Builder(requireContext()).setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Вы действительно хотите удалить карточку?")
-                .setMessage("Будет удалена карточка:\n ${viewModel.card.value?.answer} / ${viewModel.card.value?.translation}")
-                .setPositiveButton("Да") { _, _ ->
-                    viewModel.removeCardById(cardId)
-                }.setNegativeButton("Нет") { _, _ ->
-                    Toast.makeText(
-                        requireContext(), "Удаление отменено", Toast.LENGTH_LONG
-                    ).show()
-                }.show()
+            viewModel.deleteCard(cardId)
         }
     }
 
