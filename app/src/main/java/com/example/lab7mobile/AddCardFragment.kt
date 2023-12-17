@@ -10,34 +10,27 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.lab7mobile.databinding.FragmentAddCardBinding
 
-import com.example.lab7mobile.Data.CardsRepository
-
-
-const val NEW_CARD = -1
 
 class AddCardFragment : Fragment() {
-
     private lateinit var binding: FragmentAddCardBinding
-    private lateinit var viewModel: AddCardFragmentViewModel
+    private val viewModel: AddCardViewModel by viewModels { AddCardViewModel.Factory(index) }
 
     private val args by navArgs<AddCardFragmentArgs>()
     private val index by lazy { args.id }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddCardBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this).get(AddCardFragmentViewModel::class.java)
 
         if (index != NEW_CARD) {
-            val card = CardsRepository.getCards()[index]
+            val  card = viewModel.card.value!!
             binding.editTextText.setText(card.question)
             binding.editTextText2.setText(card.example)
             binding.editTextText3.setText(card.answer)
@@ -48,7 +41,6 @@ class AddCardFragment : Fragment() {
                 setupDefaultImage()
             }
         }
-
 
         binding.imageView2.setOnClickListener {
             getImage.launch("image/*")
@@ -88,7 +80,7 @@ class AddCardFragment : Fragment() {
             return
         }
 
-        viewModel.addOrUpdateCard(question, hint, answer, translate, image, index)
+        viewModel.addOrUpdateCard(question, hint, answer, translate, image)
         findNavController().popBackStack()
     }
 

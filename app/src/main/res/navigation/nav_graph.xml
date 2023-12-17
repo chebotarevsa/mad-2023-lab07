@@ -23,7 +23,7 @@
         tools:layout="@layout/fragment_add_card" >
         <argument
             android:name="id"
-            app:argType="integer"
+            app:argType="string"
             android:defaultValue="-1" />
     </fragment>
     <fragment
@@ -36,6 +36,6 @@
             app:destination="@id/addCardFragment" />
         <argument
             android:name="id"
-            app:argType="integer" />
+            app:argType="string" />
     </fragment>
 </navigation>

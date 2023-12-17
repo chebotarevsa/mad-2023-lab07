@@ -1,12 +1,13 @@
 package com.example.lab7mobile
 
-import androidx.lifecycle.ViewModelProvider
+
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.lab7mobile.Data.TermCard
@@ -15,15 +16,15 @@ import com.example.lab7mobile.databinding.FragmentViewCardBinding
 class ViewCardFragment : Fragment() {
 
     private lateinit var binding: FragmentViewCardBinding
-    private lateinit var viewModel: ViewCardFragmentViewModel
+    private val viewModel: ViewCardViewModel by viewModels { ViewCardViewModel.Factory(cardId) }
 
     private val args by navArgs<ViewCardFragmentArgs>()
-    private val index by lazy { args.id }
+    private val cardId by lazy { args.id }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentViewCardBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -31,23 +32,21 @@ class ViewCardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(ViewCardFragmentViewModel::class.java)
 
-        viewModel.card.observe(viewLifecycleOwner, { card ->
+        viewModel.card.observe(viewLifecycleOwner) { card ->
             card?.let {
                 updateUI(it)
             }
-        })
+        }
 
         binding.button.setOnClickListener {
             val action =
                 ViewCardFragmentDirections.actionViewCardFragmentToAddCardFragment().apply {
-                    id = index
+                    id = cardId
                 }
             findNavController().navigate(action)
         }
 
-        viewModel.init(index)
     }
 
     private fun updateUI(card: TermCard) {

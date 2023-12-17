@@ -1,13 +1,13 @@
+package com.example.lab7mobile.Data.DB
+
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.lab7mobile.Data.BitmapConverter
-import com.example.lab7mobile.Data.TermCard
-import com.example.lab7mobile.Data.TermCardDao
+import com.example.lab7mobile.BitmapConverter
 
-@Database(entities = [TermCard::class], version = 1)
+@Database(entities = [TermCardDB::class], version = 2)
 @TypeConverters(BitmapConverter::class)
 abstract class TermCardDataBase : RoomDatabase() {
 
@@ -22,8 +22,8 @@ abstract class TermCardDataBase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     TermCardDataBase::class.java,
-                    "app_database"
-                ).build()
+                    "term_cards"
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

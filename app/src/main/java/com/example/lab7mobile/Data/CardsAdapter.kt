@@ -6,15 +6,13 @@ import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.lab7mobile.CallbackFun
 import com.example.lab7mobile.R
 import com.example.lab7mobile.databinding.ItemCardBinding
 
-interface CallbackFun {
-    fun showCard(index: Int): Unit
-    fun deleteCard(card: TermCard): Unit
-}
 
-class CardsAdapter(private val callback: CallbackFun ): RecyclerView.Adapter<CardsAdapter.CardHolder>() {
+
+class CardsAdapter(private val callback: CallbackFun): RecyclerView.Adapter<CardsAdapter.CardHolder>() {
 
     private var _list: List<TermCard> = emptyList()
 
@@ -41,6 +39,7 @@ class CardsAdapter(private val callback: CallbackFun ): RecyclerView.Adapter<Car
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: CardHolder, position: Int) {
         val item = _list[position]
+        holder.itemView.tag = item.id
         holder.binding.cardsNameTextView.text = item.answer
         holder.binding.cardsTranslateTextView.text = item.translate
 
@@ -51,7 +50,7 @@ class CardsAdapter(private val callback: CallbackFun ): RecyclerView.Adapter<Car
 
         //нажатие на элемент карточки
         holder.itemView.setOnClickListener {
-            callback.showCard(position)
+            callback.showCard(item.id)
         }
 
         //установка стиля при нажатии/отпускании

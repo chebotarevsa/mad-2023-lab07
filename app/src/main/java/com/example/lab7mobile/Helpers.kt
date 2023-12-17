@@ -1,9 +1,16 @@
-package com.example.lab7mobile.Data
+package com.example.lab7mobile
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.TypeConverter
+import com.example.lab7mobile.Data.TermCard
 import java.io.ByteArrayOutputStream
+
+const val NEW_CARD = "-1"
+interface CallbackFun {
+        fun showCard(index: String): Unit
+        fun deleteCard(card: TermCard): Unit
+    }
 
 class BitmapConverter {
     @TypeConverter
