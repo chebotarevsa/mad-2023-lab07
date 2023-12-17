@@ -6,28 +6,27 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.lab7mobile.Data.TermCard
 
 
 @Dao
 interface TermCardDao {
     @Insert
-    fun insert(cards: List<TermCardDB>)
+    suspend fun insert(cards: List<TermCardFromDB>)
 
     @Insert
-    fun insert(card: TermCardDB)
+    suspend fun insert(card: TermCardFromDB)
 
     @Update
-    suspend fun update(card: TermCardDB): Int
+    suspend fun update(card: TermCardFromDB): Int
 
     @Delete
-    suspend fun delete(card: TermCardDB): Int
+    suspend fun delete(card: TermCardFromDB): Int
 
     @Query("SELECT * FROM term_cards")
-    fun getAll(): LiveData<List<TermCardDB>>
+    fun getAll(): LiveData<List<TermCardFromDB>>
 
     @Query("SELECT * FROM term_cards WHERE id=:id LIMIT 1")
-    fun getId(id: String): LiveData<TermCardDB>
+    fun getId(id: String): LiveData<TermCardFromDB>
 }
 
 

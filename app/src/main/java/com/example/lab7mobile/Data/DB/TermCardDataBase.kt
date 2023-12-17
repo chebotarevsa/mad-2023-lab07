@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.lab7mobile.BitmapConverter
 
-@Database(entities = [TermCardDB::class], version = 2)
+@Database(entities = [TermCardFromDB::class], version = 2)
 @TypeConverters(BitmapConverter::class)
 abstract class TermCardDataBase : RoomDatabase() {
 

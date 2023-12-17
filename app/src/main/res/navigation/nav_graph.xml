@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment3">
+    app:startDestination="@id/mainFragment">
     <fragment
-        android:id="@+id/mainFragment3"
+        android:id="@+id/mainFragment"
         android:name="com.example.lab7mobile.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
-            android:id="@+id/action_mainFragment3_to_addCardFragment"
+            android:id="@+id/action_mainFragment_to_addCardFragment"
             app:destination="@id/addCardFragment" />
         <action
-            android:id="@+id/action_mainFragment3_to_viewCardFragment"
+            android:id="@+id/action_mainFragment_to_viewCardFragment"
             app:destination="@id/viewCardFragment" />
     </fragment>
     <fragment
@@ -23,8 +23,13 @@
         tools:layout="@layout/fragment_add_card" >
         <argument
             android:name="id"
-            app:argType="string"
-            android:defaultValue="-1" />
+            app:argType="string" />
+        <action
+            android:id="@+id/action_addCardFragment_to_viewCardFragment"
+            app:destination="@id/viewCardFragment" />
+        <action
+            android:id="@+id/action_addCardFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/viewCardFragment"
@@ -37,5 +42,8 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_viewCardFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

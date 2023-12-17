@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 
@@ -26,6 +27,14 @@ class ViewCardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentViewCardBinding.inflate(inflater, container, false)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val action =
+                        ViewCardFragmentDirections.actionViewCardFragmentToMainFragment()
+                    findNavController().navigate(action)
+                }
+            })
         return binding.root
     }
 
@@ -41,9 +50,8 @@ class ViewCardFragment : Fragment() {
 
         binding.button.setOnClickListener {
             val action =
-                ViewCardFragmentDirections.actionViewCardFragmentToAddCardFragment().apply {
-                    id = cardId
-                }
+                ViewCardFragmentDirections.actionViewCardFragmentToAddCardFragment(cardId)
+
             findNavController().navigate(action)
         }
 

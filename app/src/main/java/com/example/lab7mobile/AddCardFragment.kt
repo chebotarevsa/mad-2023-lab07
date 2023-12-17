@@ -1,6 +1,7 @@
 package com.example.lab7mobile
 
 import android.graphics.ImageDecoder
+import android.graphics.Path.Direction
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +18,8 @@ import com.example.lab7mobile.databinding.FragmentAddCardBinding
 
 
 class AddCardFragment : Fragment() {
-    private lateinit var binding: FragmentAddCardBinding
+    private lateinit var _binding: FragmentAddCardBinding
+    private val binding get() = _binding
     private val viewModel: AddCardViewModel by viewModels { AddCardViewModel.Factory(index) }
 
     private val args by navArgs<AddCardFragmentArgs>()
@@ -26,11 +28,10 @@ class AddCardFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentAddCardBinding.inflate(inflater, container, false)
-
-        if (index != NEW_CARD) {
-            val  card = viewModel.card.value!!
+    ): View {
+        _binding = FragmentAddCardBinding.inflate(inflater, container, false)
+        viewModel.card.observe(viewLifecycleOwner) {
+            val card = viewModel.card.value!!
             binding.editTextText.setText(card.question)
             binding.editTextText2.setText(card.example)
             binding.editTextText3.setText(card.answer)
@@ -40,18 +41,23 @@ class AddCardFragment : Fragment() {
             } else {
                 setupDefaultImage()
             }
+//            }
+        }
+        viewModel.imageBitmap.observe(viewLifecycleOwner) {
+            binding.imageView.setImageBitmap(it)
         }
 
-        binding.imageView2.setOnClickListener {
+        binding.imageView.setOnClickListener {
             getImage.launch("image/*")
         }
 
         binding.button.setOnClickListener {
+
             addTermCard()
         }
 
         viewModel.imageBitmap.observe(viewLifecycleOwner) { bitmap ->
-            binding.imageView2.setImageBitmap(bitmap)
+            binding.imageView.setImageBitmap(bitmap)
         }
 
         return binding.root
@@ -73,21 +79,29 @@ class AddCardFragment : Fragment() {
         val hint = binding.editTextText2.text.toString()
         val answer = binding.editTextText3.text.toString()
         val translate = binding.editTextText4.text.toString()
-        val image = viewModel.imageBitmap.value
 
         if (question.isEmpty() || hint.isEmpty() || answer.isEmpty() || translate.isEmpty()) {
             Toast.makeText(this.context, "Заполните все поля", Toast.LENGTH_SHORT).show()
             return
         }
 
-        viewModel.addOrUpdateCard(question, hint, answer, translate, image)
-        findNavController().popBackStack()
+        viewModel.addOrUpdateCard(question, hint, answer, translate)
+        if(index != NEW_CARD) {
+            val action =
+                AddCardFragmentDirections.actionAddCardFragmentToViewCardFragment(viewModel.card.value!!.id)
+            findNavController().navigate(action)
+        } else {
+            val action =
+                AddCardFragmentDirections.actionAddCardFragmentToMainFragment()
+            findNavController().navigate(action)
+        }
     }
 
     private fun setupDefaultImage() {
         val imageWidth = getResources().getDimension(R.dimen.WidthimageViewAddCard).toInt()
         val imageHeight = getResources().getDimension(R.dimen.HeightimageViewAddCard).toInt()
-        val yourBitmap = getDrawable(requireContext(), R.drawable.ic_image)!!.toBitmap(imageWidth, imageHeight)
+        val yourBitmap =
+            getDrawable(requireContext(), R.drawable.download_img)!!.toBitmap(imageWidth, imageHeight)
         viewModel.setImageBitmap(yourBitmap)
     }
 }

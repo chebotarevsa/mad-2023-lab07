@@ -35,7 +35,7 @@ class MainFragment : Fragment() {
 
         val button = binding.button
         button.setOnClickListener {
-            val action = MainFragmentDirections.actionMainFragment3ToAddCardFragment()
+            val action = MainFragmentDirections.actionMainFragmentToAddCardFragment(NEW_CARD)
             findNavController().navigate(action)
         }
 
@@ -48,7 +48,7 @@ class MainFragment : Fragment() {
         }
 
         override fun showCard(cardId: String) {
-            val action = MainFragmentDirections.actionMainFragment3ToViewCardFragment(cardId)
+            val action = MainFragmentDirections.actionMainFragmentToViewCardFragment(cardId)
             findNavController().navigate(action)
         }
     }

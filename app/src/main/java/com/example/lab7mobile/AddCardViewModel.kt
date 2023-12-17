@@ -19,6 +19,7 @@ class AddCardViewModel(private val repositoryDB: CardsRepositoryDB, val cardId: 
 
     private val _imageBitmap = MutableLiveData<Bitmap?>()
     val imageBitmap: LiveData<Bitmap?> get() = _imageBitmap
+
     private val _repoCard = repositoryDB.findById(cardId)
     private val _card = MediatorLiveData<TermCard>()
     val card: LiveData<TermCard> = _card
@@ -49,8 +50,8 @@ class AddCardViewModel(private val repositoryDB: CardsRepositoryDB, val cardId: 
         example: String,
         answer: String,
         translate: String,
-        image: Bitmap?,
     ) {
+        val image = imageBitmap.value
         val newCard = card.value?.copy(
             question = question,
             example = example,
@@ -68,6 +69,12 @@ class AddCardViewModel(private val repositoryDB: CardsRepositoryDB, val cardId: 
             }
         }
     }
+
+    override fun onCleared() {
+        _card.removeSource(_repoCard)
+        super.onCleared()
+    }
+
 
     companion object {
         fun Factory(cardId: String): ViewModelProvider.Factory =
