@@ -1,9 +1,10 @@
-package com.example.myapplication
+package com.example.myapplication.domain.entity
 
 import android.graphics.Bitmap
+import java.util.UUID
 
 data class Card(
-    val id: Int,
+    val id: String = UUID.randomUUID().toString(),
     val question: String,
     val example: String,
     val answer: String,

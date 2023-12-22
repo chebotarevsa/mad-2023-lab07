@@ -1,26 +1,43 @@
 package com.example.myapplication
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.myapplication.domain.entity.Card
+import com.example.myapplication.domain.repository.CardRepository
 import kotlinx.coroutines.launch
-import java.nio.file.Files.delete
 import kotlin.concurrent.thread
 
-class CardListViewModel : ViewModel() {
+class CardListViewModel(private val cardRepository: CardRepository) : ViewModel() {
 
-    private val _cards = MutableLiveData<List<Card>>()
-    val cards: LiveData<List<Card>> = _cards
-    private val _card = MutableLiveData<Card>()
-    val card: LiveData<Card> = _card
+    var cards: LiveData<List<Card>> = cardRepository.findAll()
 
-    init {
-        _cards.value = Cards.cards
+    fun deleteCard(cardId: String) {
+        thread {
+            val card = cards.value?.first { it.id == cardId }
+            card?.let {
+                viewModelScope.launch {
+                    cardRepository.delete(it)
+                }
+            }
+        }
     }
 
-    fun deleteCard(cardId: Int) {
-        Cards.removeCard(cardId)
-        _cards.value = Cards.cards
+    companion object {
+
+        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(
+                modelClass: Class<T>, extras: CreationExtras
+            ): T {
+                val application =
+                    checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+                return CardListViewModel(
+                    CardRepository.getInstance(application)
+                ) as T
+            }
+        }
     }
 }

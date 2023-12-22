@@ -1,7 +1,5 @@
 package com.example.myapplication
 
-import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,14 +14,13 @@ import com.example.myapplication.databinding.FragmentEditCardBinding
 class EditCardFragment : Fragment() {
     private var _binding: FragmentEditCardBinding? = null
     private val binding get() = _binding!!
-    private var image: Bitmap? = null
 
     private val args by navArgs<EditCardFragmentArgs>()
     private val cardId by lazy { args.cardId }
-    private val viewModel: EditCardViewModel by viewModels() { EditCardViewModel.Factory(cardId) }
+    private val viewModel: EditCardViewModel by viewModels { EditCardViewModel.Factory(cardId) }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         super.onCreate(savedInstanceState)
         _binding = FragmentEditCardBinding.inflate(layoutInflater, container, false)
 
