@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.lab7.domain.entity.Card
 
 
 class CustomRecyclerAdapter(
@@ -38,7 +39,7 @@ class CustomRecyclerAdapter(
         val card = cards[position]
         holder.itemView.tag = card.id
         if (card.image != null) {
-            holder.thumbnailImage.setImageBitmap(card.id?.let { Model.getCardById(it).image })
+            holder.thumbnailImage.setImageBitmap(card.image)
         } else {
             holder.thumbnailImage.setImageResource(R.drawable.icon)
         }
@@ -65,7 +66,3 @@ class CustomRecyclerAdapter(
     }
 }
 
-interface ActionInterface {
-    fun onItemClick(cardId: String)
-    fun onDeleteCard(cardId: String)
-}

@@ -45,7 +45,7 @@ class CardListFragment : Fragment() {
         }
 
         override fun onDeleteCard(cardId: String) {
-            viewModel.deleteCardById(cardId)
+            viewModel.deleteCard(cardId)
         }
     }
 

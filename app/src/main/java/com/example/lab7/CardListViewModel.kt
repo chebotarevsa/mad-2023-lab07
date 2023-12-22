@@ -1,26 +1,28 @@
 package com.example.lab7
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.lab7.domain.entity.Card
+import com.example.lab7.domain.repository.CardRepository
+import kotlinx.coroutines.launch
+import kotlin.concurrent.thread
 
-class CardListViewModel : ViewModel() {
+class CardListViewModel(private val cardRepository: CardRepository) : ViewModel() {
 
-    private val _cards = MutableLiveData<List<Card>>()
-    val cards: LiveData<List<Card>> = _cards
-
-    init {
-        _cards.value = Model.cards
+    var cards: LiveData<List<Card>> = cardRepository.findAll()
+    fun deleteCard(cardId: String) {
+        thread {
+            val card = cards.value?.first { it.id == cardId }
+            card?.let {
+                viewModelScope.launch {
+                    cardRepository.delete(it)
+                }
+            }
+        }
     }
-
-    fun deleteCardById(cardId: String) {
-        Model.deleteCard(cardId)
-        _cards.value = Model.cards
-    }
-
-
     companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -31,6 +33,7 @@ class CardListViewModel : ViewModel() {
                 val application =
                     checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 return CardListViewModel(
+                    CardRepository.getInstance(application)
                 ) as T
             }
         }

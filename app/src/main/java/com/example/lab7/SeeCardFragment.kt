@@ -30,15 +30,10 @@ class SeeCardFragment : Fragment() {
             binding.cardTranslation.text = getString(R.string.translationField, viewModel.card.value!!.translation)
             if (it.image != null) {
                 binding.cardImage.setImageBitmap(it.image)
-                viewModel.setImage(it.image)
             } else {
                 binding.cardImage.setImageResource(R.drawable.icon)
             }
         }
-        viewModel.image.observe(viewLifecycleOwner){
-            binding.cardImage.setImageBitmap(it)
-        }
-
         binding.editButton.setOnClickListener {
             val action = SeeCardFragmentDirections.actionSeeCardFragmentToEditCardFragment(cardId)
             findNavController().navigate(action)

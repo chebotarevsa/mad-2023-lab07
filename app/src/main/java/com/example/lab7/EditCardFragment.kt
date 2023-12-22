@@ -39,7 +39,7 @@ class EditCardFragment : Fragment() {
                 binding.cardImage.setImageResource(R.drawable.icon)
             }
         }
-        viewModel.image.observe(viewLifecycleOwner){
+        viewModel.image.observe(viewLifecycleOwner) {
             binding.cardImage.setImageBitmap(it)
         }
 
@@ -59,16 +59,14 @@ class EditCardFragment : Fragment() {
 
 
             val translation =
+
                 binding.translationField.text.toString()
-
-
-            if (cardId == "-1") {
-                viewModel.addCard(question,example,answer, translation, viewModel.image.value)
+            viewModel.saveCard(question, example, answer, translation)
+            if (!viewModel.checkIfNewCard()){
+            val action = EditCardFragmentDirections.actionEditCardFragmentToSeeCardFragment(cardId)
+            findNavController().navigate(action)}
+            else{
                 val action = EditCardFragmentDirections.actionEditCardFragmentToCardListFragment()
-                findNavController().navigate(action)
-            } else {
-                viewModel.updateCardById(cardId,question,example,answer, translation)
-                val action = EditCardFragmentDirections.actionEditCardFragmentToSeeCardFragment(cardId)
                 findNavController().navigate(action)
             }
         }

@@ -2,62 +2,70 @@ package com.example.lab7
 
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.lab7.domain.entity.Card
+import com.example.lab7.domain.repository.CardRepository
+import kotlinx.coroutines.launch
 
 
-class EditCardViewModel(val cardId: String) : ViewModel() {
+class EditCardViewModel(private val cardRepository: CardRepository, val cardId: String) :
+    ViewModel() {
 
-    private var _card = MutableLiveData<Card>()
+    private val _repoCard = cardRepository.findById(cardId)
+
+
+    private val _card = MediatorLiveData<Card>()
     val card: LiveData<Card> = _card
+
     private var _image = MutableLiveData<Bitmap?>()
     val image: LiveData<Bitmap?> = _image
-    fun checkIfNewCard() = this.cardId == "-1"
-    private fun getEmptyCard() =
-        Card(id = null,question = "", example = "", translation = "", answer = "")
 
     init {
-        if (!checkIfNewCard()) {
-            _card.value = Model.getCardById(cardId)
-        } else {
-            _card.value = getEmptyCard()
+        _card.addSource(_repoCard) {
+            if (!checkIfNewCard()) _card.value = it
+            else _card.value = getEmptyCard()
         }
     }
+    private fun getEmptyCard() =
+        Card(question = "", example = "", translation = "", answer = "")
 
-    fun updateCardById(
-        cardId: String,
-        question: String,
-        example: String,
-        answer: String,
-        translation: String,
-    ) {
-        with(Model) {
-            updateCard(
-                card.value!!, question, example, answer, translation, image.value
-            ).also { _card.value = it }
-            updateCardList(cardId, card.value!!)
-        }
-    }
+    fun checkIfNewCard() = cardId == "-1"
 
-    fun addCard(
-        question: String, example: String, answer: String, translation: String, image: Bitmap?
+
+    fun saveCard(
+        question: String, example: String, answer: String, translation: String
     ) {
-        with(Model) {
-            createNewCard(
-                question, example, answer, translation, image
-            ).also {
-                _card.value = it
-                addCard(it)
+        val image = image.value
+        val newCard = card.value?.copy(
+            question = question,
+            example = example,
+            answer = answer,
+            translation = translation,
+            image = image
+        )
+        newCard?.let {
+            viewModelScope.launch {
+                if (checkIfNewCard()) {
+                    cardRepository.insert(it)
+                } else {
+                    cardRepository.update(it)
+                }
             }
         }
     }
-
     fun setImage(image: Bitmap?) {
         _image.value = image
     }
-
+    override fun onCleared() {
+        _card.removeSource(_repoCard)
+        super.onCleared()
+    }
     companion object {
 
         fun Factory(cardId: String): ViewModelProvider.Factory =
@@ -66,10 +74,10 @@ class EditCardViewModel(val cardId: String) : ViewModel() {
                 override fun <T : ViewModel> create(
                     modelClass: Class<T>, extras: CreationExtras
                 ): T {
-                    val application =
-                        checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-                    return EditCardViewModel(cardId) as T
+                    val application = checkNotNull(extras[APPLICATION_KEY])
+                    return EditCardViewModel(CardRepository.getInstance(application), cardId) as T
                 }
             }
     }
 }
+
