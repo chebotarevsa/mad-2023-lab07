@@ -16,18 +16,20 @@ abstract class CardDatabase : RoomDatabase() {
     abstract fun cardDao(): CardDao
 
     companion object {
-        private var cardDatabase: CardDatabase? = null
+        @Volatile
+        private var INSTANCE: CardDatabase? = null
+
         fun getInstance(context: Context): CardDatabase {
-            synchronized(this) {
-                var databaseInstance = cardDatabase
-                if (databaseInstance == null) {
-                    databaseInstance = Room.databaseBuilder(
-                        context, CardDatabase::class.java, "cardDatabase"
-                    ).fallbackToDestructiveMigration().build()
-                    cardDatabase = databaseInstance
-                }
-                return databaseInstance
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
+        }
+
+        private fun buildDatabase(context: Context): CardDatabase {
+            return Room.databaseBuilder(context.applicationContext,
+                CardDatabase::class.java, "cardDatabase")
+                 .fallbackToDestructiveMigration()
+                .build()
         }
     }
 }
